@@ -16,7 +16,7 @@
 
         lea     start(pc),a0
         lea     $20000,a1
-        move.l  #(end-start)/2-1,d0
+        move.l  #(end-start)-1,d0
 .copy:  move.w  (a0)+,(a1)+
         dbf     d0,.copy
         jmp     $20000
@@ -32,19 +32,19 @@ bplsize	=w*h/8
 screen	=$60000
 
 init:
-	move.l 4.w,a6		;execbase
+	move.l 4.w,a6					;execbase
 	clr.l d0
 	move.l #gfxname,a1
 	jsr _LVOOldOpenLibrary(a6)      ;oldopenlibrary()
 	move.l d0,a1
-	move.l 38(a1),d4	;original copper ptr
+	move.l 38(a1),d4				;original copper ptr
 
 	jsr _LVOCloseLibrary(a6)        ;closelibrary()
 
-	move.w #$ac,d7		;start y position
-	moveq #1,d6		;y add
+	move.w #$ac,d7					;start y position
+	moveq #1,d6						;y add
 	move.w CUSTOM+intenar,d5
-	move.w #$7fff,CUSTOM+intena	;disable all bits in INTENA
+	move.w #$7fff,CUSTOM+intena		;disable all bits in INTENA
 
 hwinit:
 	lea screen,a1
@@ -61,7 +61,7 @@ wframe:
 	cmp.b #$2a,CUSTOM+vhposr
 	bne.b wframe
 wframe2:
-	cmp.b #$2a,$dff006
+	cmp.b #$2a,CUSTOM+vhposr
 	beq.b wframe2
 
 ;-----frame loop start---
@@ -104,14 +104,14 @@ gfxname:
 
 	EVEN
 Copper:
-	dc.w $1fc,0			;slow fetch mode, AGA compatibility
+	dc.w $1fc,0						;slow fetch mode, AGA compatibility
 	dc.w BPLCON0,$0200              ;Bit plane control register 0 - Enable color burst output signal
 	dc.w DIWSTRT,$2c81              ;Display window start - 2c vert 81 hor - normal PAL
-	dc.w DIWSTOP,$2cc1              ;Display window stop - 2c vert 2c hor - normal PAL
+	dc.w DIWSTOP,$2cc1              ;Display window stop - 2c vert c1 hor - normal PAL
 	dc.w DDFSTRT,$38                ;Display fetch start - hor pos 38
 	dc.w DDFSTOP,$d0                ;Display fetch stop - hor pos d0
 	dc.w BPL1MOD,0                  ;Odd numbered bitplane modulo
-	dc.w BPL2MOD,0                  ;Even number bitplane modulo
+	dc.w BPL2MOD,0                  ;Even numbered bitplane modulo
 
 CopBplP:
 	dc.w BPL1PTH,(screen>>16)&$ffff ;Bit plane 1 pointers
@@ -123,7 +123,7 @@ CopBplP:
 	dc.w $2c07,$fffe
 	dc.w COLOR00,$113
 	dc.w BPLCON0,$1200
-	dc.w COLOR02,$379
+	dc.w COLOR02,$979
 waitras1:
 	dc.w $8007,$fffe
 	dc.w COLOR00,$055
